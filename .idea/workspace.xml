@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ef8c20bd-dcf5-4a52-b538-11df82d37976" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pokemon/elm.json" beforeDir="false" afterPath="$PROJECT_DIR$/Pokemon/elm.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Pokemon/src/Main.elm" beforeDir="false" afterPath="$PROJECT_DIR$/Pokemon/src/Main.elm" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -31,6 +32,12 @@
     <property name="org.elm.workspace.PROJECT_DISCOVERY" value="true" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
+  <component name="RunManager">
+    <configuration default="true" type="ELM_TEST_RUN_CONFIGURATION" factoryName="Elm Test configuration factory">
+      <ElmTestRunConfiguration elm-folder="$PROJECT_DIR$/Pokemon" />
+      <method v="2" />
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -39,7 +46,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676532914145</updated>
-      <workItem from="1676532915327" duration="2570000" />
+      <workItem from="1676532915327" duration="4160000" />
+      <workItem from="1676537519718" duration="2299000" />
     </task>
     <servers />
   </component>

@@ -2,8 +2,10 @@ module Main exposing (..)
 
 import Browser
 import Debug exposing (todo)
-import Html exposing (Html, div, h1, img, text)
+import Html exposing (Html, button, div, h1, img, text)
 import Html.Attributes exposing (src)
+import Cmd.Extra exposing (..)
+import Html.Events exposing (onClick)
 
 
 
@@ -14,7 +16,7 @@ type Model
     = LandingPage
     | Loading
     | PokemonList (List PokemonName)
-    | PokemonDetails PokemonName
+    | PokemonDetails Pokemon
     | ErrorModel String
 
 
@@ -28,10 +30,10 @@ init =
 
 
 type Msg
-    = GetPokemon
-    | GotPokemon (List PokemonName)
+    = GetPokemonList
+    | GotPokemonList (List PokemonName)
     | GetPokemonDetails PokemonName
-    | GotPokemonDetails PokemonName
+    | GotPokemonDetails Pokemon
     | ErrMsg String
 
 
@@ -51,14 +53,12 @@ type alias Ability = String
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case (msg , model) of
-        (GetPokemon , LandingPage) -> (Loading , getPokemon)
-        (GotPokemon lpn , Loading) -> (PokemonList lpn , Cmd.none)
-        (GetPokemonDetails pn , PokemonList lpn) -> (PokemonList lpn, getpokemonDetails pn)
-        (GotPokemonDetails pn , PokemonList lpn) -> (PokemonDetails pn , Cmd.none)
-        (ErrMsg s, _) -> (ErrorModel s , Cmd.none)
-        _ -> todo ""
-
+    case msg of
+        GetPokemonList -> (Loading , getPokemonList)
+        GotPokemonList lpn -> (PokemonList lpn , Cmd.none)
+        GetPokemonDetails pn -> (model, getpokemonDetails pn)
+        GotPokemonDetails p -> (PokemonDetails p , Cmd.none)
+        ErrMsg s -> (ErrorModel s , Cmd.none)
 
 
 ---- VIEW ----
@@ -66,10 +66,12 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ img [ src "/logo.svg" ] []
-        , h1 [] [ text "Your Elm App is working!" ]
-        ]
+    case model of
+        LandingPage -> div [] [text "Hello !" , button [onClick GetPokemonList ] [text " Wyświetl listę Pokemonów"]]
+        Loading -> div [] [text "laduję dane ... "]
+        PokemonList lpn ->  div [] (listOfPokemonNames lpn)
+        PokemonDetails p -> div [] [text "dane szczegółowe o Pokemonie" , button [onClick GetPokemonList ] [text "Wróć do listy Pokemonów"]]
+        _ -> div [] []
 
 
 
@@ -86,8 +88,12 @@ main =
         }
 
 
-getPokemon : Cmd Msg
-getPokemon = todo ""
+
+getPokemonList : Cmd Msg
+getPokemonList = Cmd.Extra.perform (GotPokemonList [{name = "Pikaczu" , url = "e-orzecznik.pl"}])
 
 getpokemonDetails : PokemonName -> Cmd Msg
-getpokemonDetails pn = todo ""
+getpokemonDetails pn = Cmd.Extra.perform (GotPokemonDetails {abilities = [] , back_default = pn.url})
+
+listOfPokemonNames : List PokemonName -> List (Html Msg)
+listOfPokemonNames lpn = List.map(\pn -> div [onClick (GetPokemonDetails pn) ] [text pn.name])lpn
