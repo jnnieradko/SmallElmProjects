@@ -1,14 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ef8c20bd-dcf5-4a52-b538-11df82d37976" name="Changes" comment="" />
+    <list default="true" id="ef8c20bd-dcf5-4a52-b538-11df82d37976" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Pokemon/src/Main.elm" beforeDir="false" afterPath="$PROJECT_DIR$/Pokemon/src/Main.elm" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ElmWorkspace">
-    <elmProjects />
+    <elmProjects>
+      <project path="$PROJECT_DIR$/Pokemon/elm.json" />
+    </elmProjects>
     <settings elmCompilerPath="/usr/local/bin/elm" elmFormatPath="/usr/local/bin/elm-format" elmTestPath="/usr/local/bin/elm-test" isElmFormatOnSaveEnabled="false" />
   </component>
   <component name="ProjectId" id="2LoMJyzgfcwrCOxvSOJGTdKISpW" />
@@ -21,6 +26,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Pokemon/elm.json" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="org.elm.workspace.PROJECT_DISCOVERY" value="true" />
     <property name="vue.rearranger.settings.migration" value="true" />
@@ -33,7 +39,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1676532914145</updated>
-      <workItem from="1676532915327" duration="1743000" />
+      <workItem from="1676532915327" duration="2570000" />
     </task>
     <servers />
   </component>

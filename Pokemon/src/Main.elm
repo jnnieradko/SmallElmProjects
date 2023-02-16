@@ -1,20 +1,26 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, text, div, h1, img)
+import Debug exposing (todo)
+import Html exposing (Html, div, h1, img, text)
 import Html.Attributes exposing (src)
+
 
 
 ---- MODEL ----
 
 
-type alias Model =
-    {}
+type Model
+    = LandingPage
+    | Loading
+    | PokemonList (List PokemonName)
+    | PokemonDetails PokemonName
+    | ErrorModel String
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( {}, Cmd.none )
+    ( LandingPage, Cmd.none )
 
 
 
@@ -22,12 +28,36 @@ init =
 
 
 type Msg
-    = NoOp
+    = GetPokemon
+    | GotPokemon (List PokemonName)
+    | GetPokemonDetails PokemonName
+    | GotPokemonDetails PokemonName
+    | ErrMsg String
+
+
+type alias PokemonName =
+    { name : String
+    , url : String
+    }
+
+
+type alias Pokemon =
+    { abilities : List Ability
+     , back_default : String}
+
+
+type alias Ability = String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case (msg , model) of
+        (GetPokemon , LandingPage) -> (Loading , getPokemon)
+        (GotPokemon lpn , Loading) -> (PokemonList lpn , Cmd.none)
+        (GetPokemonDetails pn , PokemonList lpn) -> (PokemonList lpn, getpokemonDetails pn)
+        (GotPokemonDetails pn , PokemonList lpn) -> (PokemonDetails pn , Cmd.none)
+        (ErrMsg s, _) -> (ErrorModel s , Cmd.none)
+        _ -> todo ""
 
 
 
@@ -54,3 +84,10 @@ main =
         , update = update
         , subscriptions = always Sub.none
         }
+
+
+getPokemon : Cmd Msg
+getPokemon = todo ""
+
+getpokemonDetails : PokemonName -> Cmd Msg
+getpokemonDetails pn = todo ""
