@@ -3,7 +3,7 @@ module Main exposing (..)
 import Browser
 import Cmd.Extra exposing (..)
 import Debug exposing (todo)
-import Html exposing (Html, button, div, h1, img, text)
+import Html exposing (Attribute, Html, button, div, h1, img, li, text, ul)
 import Html.Attributes exposing (src)
 import Html.Events exposing (onClick)
 import Http exposing (..)
@@ -18,7 +18,7 @@ type Model
     = LandingPage
     | Loading
     | PokemonList (List PokemonName)
-    | PokemonDetails Pokemon
+    | PokemonDetails String Pokemon
     | ErrorModel String
 
 
@@ -34,8 +34,8 @@ init =
 type Msg
     = GetPokemonList
     | GotPokemonList (Result Http.Error (List PokemonName))
-    | GetPokemonDetails PokemonNameUrl
-    | GotPokemonDetails Pokemon
+    | GetPokemonDetails PokemonName
+    | GotPokemonDetails String (Result Http.Error Pokemon)
     | ErrMsg String
 
 
@@ -47,10 +47,17 @@ type alias PokemonName =
 
 type alias Pokemon =
     { abilities : List Ability
-    , back_default : String
+    , img : String
     }
 
-type alias PokemonNameUrl = String
+
+
+--
+
+
+type alias PokemonNameUrl =
+    String
+
 
 type alias Ability =
     String
@@ -70,12 +77,18 @@ update msg model =
                 Ok v ->
                     ( PokemonList v, Cmd.none )
 
-        GetPokemonDetails pnUrl ->
-            ( model, getpokemonDetails pnUrl )
+        GetPokemonDetails pn ->
+            ( model, getpokemonDetails pn )
 
-        GotPokemonDetails p ->
-            ( PokemonDetails p, Cmd.none )
+        GotPokemonDetails s rePok ->
+            case rePok of
+                Err e ->
+                    ( ErrorModel "Błąd", Cmd.none )
 
+                Ok v ->
+                    ( PokemonDetails s v, Cmd.none )
+
+        --( PokemonDetails rePok, Cmd.none )
         ErrMsg s ->
             ( ErrorModel s, Cmd.none )
 
@@ -88,16 +101,34 @@ view : Model -> Html Msg
 view model =
     case model of
         LandingPage ->
-            div [] [ text "Hello !", button [ onClick GetPokemonList ] [ text " Wyświetl listę Pokemonów" ] ]
+            div []
+                [ text "Hello !"
+                , button
+                    [ onClick GetPokemonList ]
+                    [ text " Wyświetl listę Pokemonów" ]
+                ]
 
         Loading ->
             div [] [ text "laduję dane ... " ]
 
         PokemonList lpn ->
-            div [] (listOfPokemonNames lpn )
+            div []
+                [ div [] (listOfPokemonNames lpn)
+                , div []
+                    [ button [] [ text "Previous" ]
+                    , button [] [ text "Next" ]
+                    ]
+                ]
 
-        PokemonDetails p ->
-            div [] [ text "dane szczegółowe o Pokemonie", button [ onClick GetPokemonList ] [ text "Wróć do listy Pokemonów" ]  ]
+        PokemonDetails s pok ->
+            div []
+                [ text ("Dane szczegółowe o Pokemonie  " ++ s ++ " ")
+                , ul [] (listOfPokemonAbilities pok)
+                , img [ pokemonImg pok ] []
+                , button
+                    [ onClick GetPokemonList ]
+                    [ text "Wróć do listy Pokemonów" ]
+                ]
 
         _ ->
             div [] []
@@ -125,35 +156,20 @@ getPokemonList : Cmd Msg
 getPokemonList =
     Http.get
         { url = "https://pokeapi.co/api/v2/pokemon"
-        , expect = Http.expectJson GotPokemonList dekoder
+        , expect = Http.expectJson GotPokemonList dekoderListPokName
         }
 
 
-funkcja =
-    todo ""
+dekoderPokName : Decoder PokemonName
+dekoderPokName =
+    JD.map2 PokemonName
+        (JD.field "name" JD.string)
+        (JD.field "url" JD.string)
 
 
-dekoderPok : Decoder PokemonName
-dekoderPok = JD.map2 PokemonName
-                (JD.field "name" JD.string)
-                (JD.field "url" JD.string)
-
-
-dekoder : Decoder (List PokemonName)
-dekoder = JD.at ["results"] (JD.list dekoderPok)
-
-
-
-
-
-
---Cmd.Extra.perform (GotPokemonList [{name = "Pikaczu" , url = "e-orzecznik.pl"}])
--- Http request Get -- return Pokemon's details
-
-
-getpokemonDetails : PokemonNameUrl -> Cmd Msg
-getpokemonDetails pnUrl =
-    Cmd.Extra.perform (GotPokemonDetails { abilities = [], back_default = pnUrl })
+dekoderListPokName : Decoder (List PokemonName)
+dekoderListPokName =
+    JD.at [ "results" ] (JD.list dekoderPokName)
 
 
 
@@ -162,4 +178,45 @@ getpokemonDetails pnUrl =
 
 listOfPokemonNames : List PokemonName -> List (Html Msg)
 listOfPokemonNames lpn =
-    List.map (\pn -> div [ onClick (GetPokemonDetails pn.url) ] [ text pn.name ]) lpn
+    List.map (\pn -> div [ onClick (GetPokemonDetails pn) ] [ text pn.name ]) lpn
+
+
+
+-- Http request Get -- return Pokemon's details
+
+
+getpokemonDetails : PokemonName -> Cmd Msg
+getpokemonDetails pn =
+    Http.get
+        { url =
+            "https://pokeapi.co/api/v2/pokemon/" ++ pn.name
+        , expect =
+            Http.expectJson
+                (GotPokemonDetails pn.name)
+                dekoderPokemon
+        }
+
+
+dekoderPokemon : Decoder Pokemon
+dekoderPokemon =
+    JD.map2 Pokemon
+        (JD.field "abilities" <|
+            JD.list <|
+                JD.at [ "ability", "name" ] <|
+                    JD.string
+        )
+        (JD.at [ "sprites", "back_default" ] <|
+            JD.string
+        )
+
+-- function used in view in tag img - for pokemon's Image
+pokemonImg : Pokemon -> Attribute msg
+pokemonImg pok =
+    src pok.img
+
+-- function used in view to display list of pokemon's abilities
+
+
+listOfPokemonAbilities : Pokemon -> List (Html Msg)
+listOfPokemonAbilities pok =
+    List.map (\pa -> li [] [ text pa ]) pok.abilities

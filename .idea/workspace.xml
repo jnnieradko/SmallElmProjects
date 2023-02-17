@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ef8c20bd-dcf5-4a52-b538-11df82d37976" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Pokemon/elm.json" beforeDir="false" afterPath="$PROJECT_DIR$/Pokemon/elm.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Pokemon/src/Main.elm" beforeDir="false" afterPath="$PROJECT_DIR$/Pokemon/src/Main.elm" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -17,20 +16,19 @@
     </elmProjects>
     <settings elmCompilerPath="/usr/local/bin/elm" elmFormatPath="/usr/local/bin/elm-format" elmTestPath="/usr/local/bin/elm-test" isElmFormatOnSaveEnabled="false" />
   </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
   <component name="ProjectId" id="2LoMJyzgfcwrCOxvSOJGTdKISpW" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
-  </component>
-  <component name="PropertiesComponent">
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/Pokemon/elm.json" />
-    <property name="nodejs_package_manager_path" value="npm" />
-    <property name="org.elm.workspace.PROJECT_DISCOVERY" value="true" />
-    <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RunManager">
     <configuration default="true" type="ELM_TEST_RUN_CONFIGURATION" factoryName="Elm Test configuration factory">
@@ -47,7 +45,9 @@
       <option name="presentableId" value="Default" />
       <updated>1676532914145</updated>
       <workItem from="1676532915327" duration="4160000" />
-      <workItem from="1676537519718" duration="2299000" />
+      <workItem from="1676537519718" duration="13187000" />
+      <workItem from="1676622719640" duration="2648000" />
+      <workItem from="1676625673249" duration="13000" />
     </task>
     <servers />
   </component>
