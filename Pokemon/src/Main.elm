@@ -17,7 +17,7 @@ import Json.Decode as JD exposing (Decoder)
 type Model
     = LandingPage
     | Loading
-    | PokemonList (List PokemonName)
+    | PokemonList (Maybe String) (Maybe String) (List PokemonName)
     | PokemonDetails String Pokemon
     | ErrorModel String
 
@@ -32,11 +32,19 @@ init =
 
 
 type Msg
-    = GetPokemonList
-    | GotPokemonList (Result Http.Error (List PokemonName))
+    = FirstGetPokemonList String
+    | GetPokemonList (Maybe String)
+    | GotPokemonList (Result Http.Error Pokemons)
     | GetPokemonDetails PokemonName
     | GotPokemonDetails String (Result Http.Error Pokemon)
     | ErrMsg String
+
+
+type alias Pokemons =
+    { next : Maybe String
+    , previos : Maybe String
+    , allPokemons : List PokemonName
+    }
 
 
 type alias PokemonName =
@@ -66,16 +74,20 @@ type alias Ability =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GetPokemonList ->
-            ( Loading, getPokemonList )
+        FirstGetPokemonList s -> (Loading , getPokemonList s)
+        GetPokemonList ms ->
+            case ms of
+                Just x -> ( Loading, getPokemonList x )
+                Nothing -> (Loading, getPokemonList "https://pokeapi.co/api/v2/pokemon")
 
-        GotPokemonList relpn ->
-            case relpn of
+
+        GotPokemonList relPokeomns ->
+            case relPokeomns of
                 Err e ->
                     ( ErrorModel "Błąd", Cmd.none )
 
                 Ok v ->
-                    ( PokemonList v, Cmd.none )
+                    ( PokemonList v.next v.previos v.allPokemons, Cmd.none )
 
         GetPokemonDetails pn ->
             ( model, getpokemonDetails pn )
@@ -104,19 +116,19 @@ view model =
             div []
                 [ text "Hello !"
                 , button
-                    [ onClick GetPokemonList ]
+                    [ onClick (FirstGetPokemonList "https://pokeapi.co/api/v2/pokemon" ) ]
                     [ text " Wyświetl listę Pokemonów" ]
                 ]
 
         Loading ->
             div [] [ text "laduję dane ... " ]
 
-        PokemonList lpn ->
+        PokemonList next previous lpn ->
             div []
                 [ div [] (listOfPokemonNames lpn)
                 , div []
-                    [ button [] [ text "Previous" ]
-                    , button [] [ text "Next" ]
+                    [ button [onClick (GetPokemonList previous)] [ text "Previous",  text (Maybe.withDefault "" previous) ]
+                    , button [onClick (GetPokemonList next)] [ text "Next" , text (Maybe.withDefault "" next) ]
                     ]
                 ]
 
@@ -126,7 +138,7 @@ view model =
                 , ul [] (listOfPokemonAbilities pok)
                 , img [ pokemonImg pok ] []
                 , button
-                    [ onClick GetPokemonList ]
+                    [ onClick (FirstGetPokemonList "https://pokeapi.co/api/v2/pokemon") ]
                     [ text "Wróć do listy Pokemonów" ]
                 ]
 
@@ -152,11 +164,11 @@ main =
 -- Http request Get -- return list of Pokemon's names
 
 
-getPokemonList : Cmd Msg
-getPokemonList =
+getPokemonList : String ->  Cmd Msg
+getPokemonList s =
     Http.get
-        { url = "https://pokeapi.co/api/v2/pokemon"
-        , expect = Http.expectJson GotPokemonList dekoderListPokName
+        { url = s
+        , expect = Http.expectJson GotPokemonList dekoderPokemons
         }
 
 
@@ -167,10 +179,18 @@ dekoderPokName =
         (JD.field "url" JD.string)
 
 
-dekoderListPokName : Decoder (List PokemonName)
-dekoderListPokName =
-    JD.at [ "results" ] (JD.list dekoderPokName)
+dekoderPokemons : Decoder Pokemons
+dekoderPokemons =
+    JD.map3 Pokemons
+        (dekoderPaginationNext)
+        (dekoderPaginationPrevious)
+        (JD.at [ "results" ] (JD.list dekoderPokName))
 
+dekoderPaginationNext : Decoder (Maybe String)
+dekoderPaginationNext = JD.field "next" (JD.maybe JD.string)
+
+dekoderPaginationPrevious : Decoder (Maybe String)
+dekoderPaginationPrevious = JD.field "previous" (JD.maybe JD.string)
 
 
 -- function used in view to display list of pokemon's name
@@ -209,10 +229,16 @@ dekoderPokemon =
             JD.string
         )
 
+
+
 -- function used in view in tag img - for pokemon's Image
+
+
 pokemonImg : Pokemon -> Attribute msg
 pokemonImg pok =
     src pok.img
+
+
 
 -- function used in view to display list of pokemon's abilities
 
